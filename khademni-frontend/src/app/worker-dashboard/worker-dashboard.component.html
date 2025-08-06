@@ -1,0 +1,9 @@
+<div class="container">
+  <h2>Worker Dashboard</h2>
+  <h3>Open Jobs</h3>
+  <div *ngFor="let job of jobs" class="job">
+    <h4>{{ job.title }}</h4>
+    <p>{{ job.description }}</p>
+    <button (click)="applyForJob(job.id)">Apply</button>
+  </div>
+</div>
