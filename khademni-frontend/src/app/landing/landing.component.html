@@ -1,6 +1,14 @@
-<div class="container">
-  <h1>Welcome to Khademni</h1>
-  <p>Your job platform for workers and employers.</p>
-  <button (click)="goToSignup()">Sign Up</button>
-  <button (click)="goToLogin()">Sign In</button>
-</div>
+<div class="hero">
+    <h1 class="title">Khademni - Your Job Platform</h1>
+    <p class="slogan">تحب تخدم؟ هاذي بلاصتك! Connect workers and employers with ease.</p>
+    <div class="cta-buttons">
+      <button (click)="goToSignup()" class="btn signup">Sign Up</button>
+      <button (click)="goToLogin()" class="btn login">Sign In</button>
+    </div>
+  </div>
+  <div class="features">
+    <div class="feature-card" *ngFor="let feature of ['Jobs', 'Profiles', 'Opportunities']">
+      <h3>{{feature}}</h3>
+      <p>Explore endless possibilities with Khademni.</p>
+    </div>
+  </div>

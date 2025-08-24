@@ -1,10 +1,99 @@
-.container {
+.hero {
   text-align: center;
-  padding: 50px;
+  padding: 100px 20px;
+  background: linear-gradient(135deg, #1e3c72, #2a5298);
+  color: white;
+  animation: fadeIn 2s ease-in;
 }
-button {
-  margin: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
+
+.title {
+  font-size: 3em;
+  margin-bottom: 10px;
+  animation: bounceIn 1.5s ease-out;
+}
+
+.slogan {
+  font-size: 1.5em;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.image-placeholder {
+  width: 300px;
+  height: 200px;
+  background: #ddd;
+  margin: 20px auto;
+  border: 2px dashed #ccc;
   cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.image-placeholder:hover {
+  transform: scale(1.05);
+}
+
+.cta-buttons {
+  margin-top: 30px;
+}
+
+.btn {
+  margin: 10px;
+  padding: 15px 30px;
+  font-size: 18px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn.signup {
+  background-color: #ff6f61;
+  color: white;
+}
+
+.btn.login {
+  background-color: #4ecdc4;
+  color: white;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.features {
+  display: flex;
+  justify-content: space-around;
+  padding: 50px 20px;
+  background: #f4f4f9;
+}
+
+.feature-card {
+  text-align: center;
+  padding: 20px;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 30%;
+  animation: slideUp 1s ease-out;
+}
+
+.feature-card h3 {
+  color: #2a5298;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  60% { transform: scale(1.1); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(50px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }

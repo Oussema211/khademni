@@ -24,5 +24,9 @@ export class SignupComponent {
         this.errorMessage = err.error || 'Signup failed';
       }
     });
+    
+  }
+   goToLogin() {
+    this.router.navigate(['/login']);
   }
 }
