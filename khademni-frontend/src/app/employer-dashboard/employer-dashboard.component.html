@@ -17,9 +17,11 @@
     <h4>{{ job.title }}</h4>
     <p>{{ job.description }}</p>
     <button (click)="viewApplications(job.id)">View Applications</button>
+      <button (click)="deleteJob(job.id)">Delete</button>
   </div>
   <h3>Applications</h3>
   <div *ngFor="let app of applications" class="application">
     <p>Job ID: {{ app.jobId }} | Worker ID: {{ app.workerId }} | Status: {{ app.status }}</p>
   </div>
+  
 </div>

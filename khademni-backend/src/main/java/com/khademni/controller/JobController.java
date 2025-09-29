@@ -27,6 +27,25 @@ public class JobController {
         return jobService.getAllOpenJobs();
     }
 
+    // NEW ENDPOINT: Get jobs for the logged-in employer
+    @GetMapping("/my-jobs")
+    public ResponseEntity<?> getMyJobs(@RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7);
+            String role = jwtUtil.getRoleFromToken(token);
+
+            if (!role.equals("employer")) {
+                return ResponseEntity.status(403).body("Only employers can access this endpoint");
+            }
+
+            Long employerId = jwtUtil.getClaimsFromToken(token).get("id", Long.class);
+            List<Job> jobs = jobService.getJobsByEmployer(employerId);
+            return ResponseEntity.ok(jobs);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @PostMapping
     public ResponseEntity<?> createJob(@RequestBody JobDTO jobDTO, @RequestHeader("Authorization") String authHeader) {
         try {
@@ -84,4 +103,23 @@ public class JobController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteJob(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
+        try {
+            String token = authHeader.substring(7);
+            String role = jwtUtil.getRoleFromToken(token);
+
+            if (!role.equals("employer")) {
+                return ResponseEntity.status(403).body("Only employers can delete jobs");
+            }
+
+            Long employerId = jwtUtil.getClaimsFromToken(token).get("id", Long.class);
+            jobService.deleteJob(id, employerId);
+
+            return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

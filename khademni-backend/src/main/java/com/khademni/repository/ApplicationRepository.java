@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ApplicationRepository extends JpaRepository<Application, Long> {
     List<Application> findByJobId(Long jobId);
+    List<Application> findByWorkerId(Long workerId);
+    List<Application> findByJobIdAndWorkerId(Long jobId, Long workerId);
 }

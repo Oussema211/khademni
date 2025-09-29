@@ -38,6 +38,13 @@ public class JobService {
         return jobRepository.findByStatus("open");
     }
 
+    // NEW METHOD: Get jobs by specific employer
+    public List<Job> getJobsByEmployer(Long employerId) {
+        return jobRepository.findAll().stream()
+                .filter(job -> job.getEmployerId().equals(employerId))
+                .toList();
+    }
+
     public Job getJobById(Long id) {
         return jobRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
@@ -48,9 +55,17 @@ public class JobService {
                 .orElseThrow(() -> new RuntimeException("Job not found"));
         User worker = userRepository.findById(workerId)
                 .orElseThrow(() -> new RuntimeException("Worker not found"));
+
         if (!job.getStatus().equals("open")) {
             throw new RuntimeException("Job is closed");
         }
+
+        // Check if worker already applied
+        List<Application> existingApplications = applicationRepository.findByJobIdAndWorkerId(jobId, workerId);
+        if (!existingApplications.isEmpty()) {
+            throw new RuntimeException("You have already applied to this job");
+        }
+
         Application application = new Application();
         application.setJobId(jobId);
         application.setWorkerId(workerId);
@@ -61,9 +76,22 @@ public class JobService {
     public List<Application> getApplicationsForJob(Long jobId, Long employerId) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
+
         if (!job.getEmployerId().equals(employerId)) {
-            throw new RuntimeException("Unauthorized");
+            throw new RuntimeException("Unauthorized: You can only view applications for your own jobs");
         }
+
         return applicationRepository.findByJobId(jobId);
     }
+    public void deleteJob(Long jobId, Long employerId) {
+        Job job = jobRepository.findById(jobId)
+                .orElseThrow(() -> new RuntimeException("Job not found"));
+
+        if (!job.getEmployer().getId().equals(employerId)) {
+            throw new RuntimeException("You are not allowed to delete this job");
+        }
+
+        jobRepository.delete(job);
+    }
+
 }
