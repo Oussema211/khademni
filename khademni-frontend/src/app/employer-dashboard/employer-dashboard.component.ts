@@ -12,6 +12,8 @@ export class EmployerDashboardComponent implements OnInit {
   jobs: any[] = [];
   applications: any[] = [];
   selectedJobId: number | null = null;
+  loading: boolean = false;
+  errorMessage: string = '';
 
   constructor(
     private jobService: JobService,
@@ -19,19 +21,26 @@ export class EmployerDashboardComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    console.log('Employer Dashboard initialized');
+    console.log('Token present:', !!localStorage.getItem('token'));
     this.loadJobs();
   }
 
   loadJobs() {
+    this.loading = true;
+    this.errorMessage = '';
+    
     this.jobService.getAllJobs().subscribe({
       next: (jobs) => {
-        // Filter jobs by current employer
+        console.log('✅ Jobs loaded successfully:', jobs);
         this.jobs = jobs;
-        console.log('Loaded jobs:', jobs);
+        this.loading = false;
       },
       error: (err) => {
-        console.error('Error loading jobs:', err);
-        alert('Failed to load jobs');
+        console.error('❌ Error loading jobs:', err);
+        this.errorMessage = err.message || 'Failed to load jobs';
+        this.loading = false;
+        alert('Failed to load jobs: ' + this.errorMessage);
       }
     });
   }
@@ -42,16 +51,21 @@ export class EmployerDashboardComponent implements OnInit {
       return;
     }
 
+    console.log('Posting job:', this.job);
+    this.loading = true;
+
     this.jobService.createJob(this.job).subscribe({
       next: (job) => {
+        console.log('✅ Job posted successfully:', job);
         alert('Job posted successfully!');
         this.job = { title: '', description: '', status: 'open' };
+        this.loading = false;
         this.loadJobs();
       },
       error: (err) => {
-        console.error('Job creation error:', err);
-        const errorMsg = err.error?.message || err.error || 'Job creation failed';
-        alert('Job creation failed: ' + errorMsg);
+        console.error('❌ Job creation error:', err);
+        this.loading = false;
+        alert('Job creation failed: ' + err.message);
       }
     });
   }
@@ -59,64 +73,52 @@ export class EmployerDashboardComponent implements OnInit {
   viewApplications(jobId: number) {
     this.selectedJobId = jobId;
     this.applications = [];
+    this.loading = true;
     
     console.log('Fetching applications for job:', jobId);
     
     this.jobService.getApplications(jobId).subscribe({
       next: (applications) => {
+        console.log('✅ Applications loaded:', applications);
         this.applications = applications;
-        console.log('Applications loaded:', applications);
+        this.loading = false;
         
         if (applications.length === 0) {
           alert('No applications yet for this job');
         }
       },
       error: (err) => {
-        console.error('Error loading applications:', err);
-        
-        // Better error message extraction
-        let errorMsg = 'Failed to load applications';
-        
-        if (err.status === 403) {
-          errorMsg = 'You are not authorized to view these applications';
-        } else if (err.status === 404) {
-          errorMsg = 'Job not found';
-        } else if (err.error) {
-          if (typeof err.error === 'string') {
-            errorMsg = err.error;
-          } else if (err.error.message) {
-            errorMsg = err.error.message;
-          }
-        } else if (err.message) {
-          errorMsg = err.message;
-        }
-        
-        alert(errorMsg);
+        console.error('❌ Error loading applications:', err);
+        this.loading = false;
+        alert('Failed to load applications: ' + err.message);
       }
     });
   }
+
   deleteJob(jobId: number) {
-  if (confirm('Are you sure you want to delete this job?')) {
-    this.jobService.deleteJob(jobId).subscribe({
-      next: () => {
-        // Remove deleted job from list without reloading
-        this.jobs = this.jobs.filter(job => job.id !== jobId);
-        alert('Job deleted successfully');
-      },
-      error: (err) => {
-        console.error('Error deleting job:', err);
-        const errorMsg = err.error?.message || err.error || 'Job deletion failed';
-        alert(errorMsg);
-      }
-    });
+    if (confirm('Are you sure you want to delete this job?')) {
+      console.log('Deleting job:', jobId);
+      this.loading = true;
+
+      this.jobService.deleteJob(jobId).subscribe({
+        next: () => {
+          console.log('✅ Job deleted successfully');
+          this.jobs = this.jobs.filter(job => job.id !== jobId);
+          this.loading = false;
+          alert('Job deleted successfully');
+        },
+        error: (err) => {
+          console.error('❌ Error deleting job:', err);
+          this.loading = false;
+          alert('Job deletion failed: ' + err.message);
+        }
+      });
+    }
   }
-}
-
-  
-
 
   logout() {
     if (confirm('Are you sure you want to logout?')) {
+      console.log('Logging out...');
       this.authService.logout();
     }
   }
